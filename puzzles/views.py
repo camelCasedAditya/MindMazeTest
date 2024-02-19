@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 
 @login_required
 def index(request):
+    # Finds out the level of the user
     level_set = Group.objects.filter(user=request.user)
     for g in level_set:
         groupname = g.name
@@ -28,6 +29,7 @@ def index(request):
     elif groupname == 'Default':
         user_level = 1
 
+    # Filters the puzzles to only get unsolved ones of the same level
     problem_set = Puzzle.objects.filter(level=user_level).order_by('id')
     completed_set = Submission.objects.filter(Q(attempts=3) | Q(
         is_correct=True), user=request.user).values_list('puzzle_id', flat=True)
@@ -38,6 +40,7 @@ def index(request):
     if (len(puzzles_left) == 0):
         no_puzzles = True
 
+    # Pagination to manage number of puzzles per page
     p = Paginator(problem_set, 6)
     page = request.GET.get('page')
     puzzles = p.get_page(page)
@@ -47,7 +50,7 @@ def index(request):
     context = {"problem_set": problem_set, "no_puzzles": no_puzzles, "puzzles":puzzles, "number_of_pages":number_of_pages}
     return render(request, "puzzles/index.html", context)
 
-
+# View when user clicks on a puzzle to solve it
 @login_required
 def detail(request, puzzle_id_detail):
     answered = False
@@ -89,7 +92,8 @@ def detail(request, puzzle_id_detail):
         user_level = 1
     problem_set = Puzzle.objects.filter(level=user_level)
     completed_set = Submission.objects.filter(Q(attempts=3) | Q(
-        is_correct=True), user=request.user).values_list('puzzle_id', flat=True)
+        is_correct=True), 
+        user=request.user).values_list('puzzle_id', flat=True)
     for i in completed_set:
         problem_set = problem_set.exclude(pk=i)
 
@@ -106,7 +110,7 @@ def detail(request, puzzle_id_detail):
     else:
         prev_puzzle = problem_set[puzzle_index-1]
 
-
+    # Gets the puzzle attempt and and records it in database
     if (past_attempts < 3):
         if request.method == "POST":
             form = AnswerForm(request.POST or None)

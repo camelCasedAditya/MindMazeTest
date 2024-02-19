@@ -4,6 +4,7 @@ import chess
 import chess.svg
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+# Model for puzzles
 class Puzzle(models.Model):
     term = models.ForeignKey(Term, on_delete=models.CASCADE, null=True, blank=True)
     week = models.IntegerField()

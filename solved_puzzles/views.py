@@ -10,6 +10,8 @@ from django.core.paginator import Paginator
 
 @login_required
 def index(request):
+
+    # Finding all the solved puzzles of the user
     completed_set = Submission.objects.filter(
         user=request.user).values_list('puzzle_id', flat=True).order_by('id')
     solved = Puzzle.objects.filter(pk__in=completed_set).order_by('id')
@@ -27,6 +29,7 @@ def index(request):
 
 @login_required
 def detail(request, puzzle_id):
+    # Get all the solved puzzles of the user
     puzzle = get_object_or_404(Puzzle, pk=puzzle_id)
     past_submission = Submission.objects.filter(
         user=request.user, puzzle_id=puzzle_id)
@@ -42,6 +45,7 @@ def detail(request, puzzle_id):
     problem_set = Puzzle.objects.filter(pk__in=completed_set)
     problem_set = list(problem_set)
     puzzle_index = problem_set.index(puzzle)
+    # Finding the next and previous solved puzzles for the navigation buttons
     problem_set_len = len(problem_set)
     if (puzzle_index+1) > (problem_set_len-1):
         next_puzzle = problem_set[0]

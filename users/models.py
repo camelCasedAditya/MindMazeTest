@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from puzzles.models import Puzzle
 
+# Database model to keep track of puzzle submissions by a user
 class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     #puzzle = models.ForeignKey(Puzzle, on_delete=models.CASCADE, related_name="puzzles", null=True, blank=True)

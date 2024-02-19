@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from .forms import RegistrationForm
 
 def login_user(request):
+	# Authentication system for login
 	if request.method == "POST":
 		username = request.POST['username']
 		password = request.POST['password']
@@ -14,6 +15,7 @@ def login_user(request):
 			login(request, user)
 			return redirect('dashboard')
 		else:
+			# Error messages if login fails
 			messages.success(request, ("There Was An Error Logging In, Try Again..."))	
 			return render(request, 'authenticate/login.html', {})	
 
@@ -21,17 +23,20 @@ def login_user(request):
 	else:
 		return render(request, 'authenticate/login.html', {})
 
+# Logout system
 def logout_user(request):
 	logout(request)
 	messages.success(request, ("You Were Logged Out!"))
 	return redirect('login')
 
 def register(request):
+	# Redirects user to dashboard if they are already logged in
 	if request.user.is_authenticated:
 		messages.success(request, ('You are already logged in'))
 		return redirect('dashboard')
 
 	else:
+		# Gets all the data from the django form and saves it in the preset model
 		if request.method == "POST":
 			form = RegistrationForm(request.POST)
 			if form.is_valid():
